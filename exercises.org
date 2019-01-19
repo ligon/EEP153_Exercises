@@ -102,6 +102,3 @@ bill was:
 #+begin_src python :session
 print(df['Price'].sum())
 #+end_src
-
-#+results:
-72.22
