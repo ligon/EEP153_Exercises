@@ -1,0 +1,107 @@
+** [EEP153] Week 0
+   :PROPERTIES:
+   :EXPORT_FILE_NAME: week0
+   :END:
+*** Learning goals
+    1. Open a =jupyter= notebook on =datahub.berkeley.edu=.
+    2. Understand simple =python= expressions.
+    3. Work with lists & dictionaries.
+    3. Submit indication of completion.
+
+**** Simple Expressions
+Python is a general purpose language, extended via /modules/.
+One important aspect of python are /expressions/.  Here are some examples:
+#+begin_src python
+# Arithmetic 
+1 + 1
+
+# String (Delineated using single- or double-quotes)
+"Hello world!"
+
+# To see output, using a "print" statement:
+print(1+1)
+print("Hello" + "world!")
+#+end_src
+   
+The above provides examples of:
+   - Comments :: Text that begins with a "#" character.
+   - Function calls :: Something that takes arguments (in parentheses)
+                       and returns some output.  Here "print" is a
+                       function.
+   - Objects :: 1 and "Hello" are examples of objects.
+   - Operators :: "+" is an operator.  Notice that it functions
+                  differently depending on what it's operating on;
+                  that's because its operation depends on the =type=
+                  of the objects (/operands/) it's operating on.  
+
+Predict the output of the following two lines:
+#+begin_src python
+print(type(1+1))
+print(type("Hello"))
+#+end_src
+
+**** Lists
+Strings and integers are simple examples of different data types (or
+objects).  A very important type that is more complicated are
+=lists=.  Here are some examples.  Examine them, and predict the output:
+#+begin_src python
+a = [1,2,3]
+b = ["Hello","world"]
+
+c = a + b
+print(c)
+print(len(c))  # Here len returns the "length" of the list.
+#+end_src
+
+**** Dictionaries
+
+Another very basic kind of compound object are =dicts= (dictionaries;
+also called associative arrays or hashes in other languages).  Predict
+the output:
+
+#+begin_src python :results output
+d = {'name': "Barney", 'species': "Dinosaur", 'age': 27, 'color': "Purple"}
+
+print("{name} the {species} is {color}.".format(**d))
+#+end_src
+
+**** DataFrames
+
+A much more complicated data structure is provided by a module called
+=pandas=; you can find a quick tutorial at
+http://pandas.pydata.org/pandas-docs/version/0.23/10min.html.  The
+DataFrame object will be very important for us.
+
+The =pandas= module provides a data structure called a =DataFrame=.
+These are basically rectangular arrays of data, with names for rows
+and columns, rather like a spreadsheet.  In fact, one important thing
+one can do with DataFrames is to import data /from/ spreadsheets.
+#+begin_src python :session
+import pandas as pd
+
+# Try looking at https://docs.google.com/spreadsheets/d/1ObK5N_5aVXzVHE7ZXWBg0kQvPS3k1enRwsUjhytwh5A in your browser.
+SHEET = "https://docs.google.com/spreadsheets/d/1q1ikP1CXCcLf_Tq6VbhoskOYRvn_nDU5MHStIoVzMgA"
+
+# The following line goes on-line and turns the spreadsheet into a pandas DataFrame:
+df = pd.read_csv(SHEET + "/export?format=csv")
+
+print(df.head())
+#+end_src
+
+If this worked (!) you should be able to see some data from a recent
+shopping trip of mine.  What are the different variables available in
+the DataFrame =df=?  They correspond to the /columns/ of the spreadsheet.
+
+#+begin_src python :session
+print(df.columns)
+#+end_src
+
+Now, what else can we do?  Let's figure out how much my total grocery
+bill was:
+
+#+begin_src python :session
+print(df['Price'].sum())
+#+end_src
+
+#+results:
+72.22
