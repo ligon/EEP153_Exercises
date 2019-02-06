@@ -1,14 +1,14 @@
-** [EEP153] Week 0
-   :PROPERTIES:
-   :EXPORT_FILE_NAME: week0
-   :END:
-*** Learning goals
-    1. Open a =jupyter= notebook on =datahub.berkeley.edu=.
-    2. Understand simple =python= expressions.
-    3. Work with lists & dictionaries.
-    3. Submit indication of completion.
+* [EEP153] Week 0
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: week0
+  :END:
+** Learning goals
+   1. Open a =jupyter= notebook on =datahub.berkeley.edu=.
+   2. Understand simple =python= expressions.
+   3. Work with lists & dictionaries.
+   3. Submit indication of completion.
 
-**** Simple Expressions
+*** Simple Expressions
 Python is a general purpose language, extended via /modules/.
 One important aspect of python are /expressions/.  Here are some examples:
 #+begin_src python
@@ -40,7 +40,7 @@ print(type(1+1))
 print(type("Hello"))
 #+end_src
 
-**** Lists
+*** Lists
 Strings and integers are simple examples of different data types (or
 objects).  A very important type that is more complicated are
 =lists=.  Here are some examples.  Examine them, and predict the output:
@@ -53,7 +53,7 @@ print(c)
 print(len(c))  # Here len returns the "length" of the list.
 #+end_src
 
-**** Dictionaries
+*** Dictionaries
 
 Another very basic kind of compound object are =dicts= (dictionaries;
 also called associative arrays or hashes in other languages).  Predict
@@ -65,7 +65,7 @@ d = {'name': "Barney", 'species': "Dinosaur", 'age': 27, 'color': "Purple"}
 print("{name} the {species} is {color}.".format(**d))
 #+end_src
 
-**** DataFrames
+*** DataFrames
 
 A much more complicated data structure is provided by a module called
 =pandas=; you can find a quick tutorial at
@@ -102,3 +102,243 @@ bill was:
 #+begin_src python :session
 print(df['Price'].sum())
 #+end_src
+* [EEP153] Week 3
+  Some programming learning goals for week 3:
+   1. List comprehensions
+   2. Some string operations
+   3. Understand simple recursions.
+   4. Use lambda expressions (anonymous functions)
+   5. Root-finding for equations of one variable
+** List comprehensions
+   You're already familiar with =for= loops like the following, which 
+   computes the squares of a list of numbers:
+#+begin_src ipython
+L = []
+for i in [0,1,2]:
+    L.append(i**2)
+
+print(L)
+#+end_src
+   This is pretty clear, but not very elegant.  Consider instead the
+   following /list comprehension/:
+#+begin_src ipython
+L = [i**2 for i in [0,1,2]]
+
+print(L)
+#+end_src
+
+** Simple recursions
+   A recursion, or a recursive function, is a function that may call
+   itself when evaluated.  Here's a very simple recursion:
+#+begin_src ipython
+def foo(n):
+    """Sum of postive integers up to n."""
+    if n==0:
+        return 0
+    else:
+        return n + foo(n-1)
+
+foo(43)
+#+end_src
+ 
+   The fact that evaluating =foo(n)= involves calling =foo(n-1)= is
+   what makes this a recursion.
+
+   If you give this even a little thought you'll be able to think of
+   more efficient ways to do this; it's the demonstration of the
+   simple pattern we're after.
+
+   Here's another, which operates on lists of numbers:
+#+begin_src ipython
+def bar(x):
+    """What does this function do, and how does it do it?"""
+    if x==[]: return 0 
+ 
+    try:
+        return bar(x[0]) + bar(x[1:])
+    except TypeError: # x not a list?
+        return x   
+#+end_src
+
+#+begin_src ipython
+# Try calling bar after predicting its output:
+bar([21,14,3,4])
+#+end_src
+
+   The function =bar= also could be implemented much more efficiently!
+
+   Finally, here's a function which /is/ useful (in fact, we'll use it
+   below).  This takes a list (or tuple) which may consist of lists,
+   and "flattens" it so that none of the elements are lists.  For
+   example, =flatten([1,[2,3]]) -> [1,2,3]=.
+#+begin_src ipython
+def flatten(a):
+     if not isinstance(a,(tuple,list)): return [a]
+     if len(a)==0: return []
+     return flatten(a[0])+flatten(a[1:])
+
+print(flatten([1,[2,3]]))
+#+end_src
+
+** Some string operations
+   We're interested here in a couple of simple ways to map strings
+   into lists and lists into strings.  One common problem: you may
+   have a string like "1,2,3,fiver".  
+#+begin_src ipython
+s = "1,2,3,fiver"
+
+# s can be treated like a list.  What is s[1]?
+s[1]
+#+end_src
+
+   So strings can be treated as lists of characters, at least for some
+   purposes.  But the string above suggests a /different/ list, one
+   with four elements.  To obtain this, consider
+#+begin_src ipython
+t = s.split(',')
+print(t)
+#+end_src
+
+   We can also go the other way; given a list, we can turn it into a
+   string, with the different elements separated by a string of our choice:
+#+begin_src ipython
+" and ".join(t)
+#+end_src
+
+   So how about using recursions and these string operations to
+   actually do something useful?  Let's write a function that can take
+   a string representing ranges of numbers, like "1,2-4,3-5,0-3" and
+   return list of the numbers that appear (perhaps implicitly) in the
+   string.
+#+begin_src ipython
+def range_parser(s,unique=False):
+    """
+    Parse a string of numbers including ranges indicated by '-',
+    and return a sorted list of all such numbers.
+
+    If the optional flag unique is True, then return a list in
+    which no numbers are repeated.
+
+    Ethan Ligon                               February 2019
+    """
+    if unique:
+        return sorted(list(set(range_parser(s,unique=False))))
+    
+    try: # Maybe we just have a single number, like '3'?
+        return [int(s)]
+    except ValueError:
+        if ',' in s: # Or maybe we have a string with commas?
+            return sorted(flatten([range_parser(x) for x in s.split(',')]))
+        elif '-' in s:
+            a,b = [range_parser(x)[0] for x in s.split('-')]
+            return list(range(a,b))
+        
+print(range_parser("1,2-4,3-5,0-3",unique=True))
+#+end_src
+
+
+
+** lambda expressions (anonymous functions)
+   This is incredibly obvious to some people, but for others it takes
+   some work to wrap their heads around.  But hopefully this will make
+   this all obvious.  *Predict the output*:
+#+begin_src ipython
+# Consider the two following functions
+
+def f(x):
+    return 1/x - 1
+
+g = lambda x: 1/x -1
+
+print(f(3) - g(3))
+#+end_src
+   It may help to think of objects like =g= or =f= not as functions,
+   but instead as names of or references to functions.
+
+** Root-finding
+   If we have a function (referred to by) =f= that takes a single
+   scalar argument and returns a real number, then we may often be
+   interesting in equations such as 
+   \[
+      f(x) = 0;
+   \]
+   the problem then is to find a value of $x$ that satisfies the
+   equation.
+
+   The first thing we might worry about is that no such solution
+   exists.  Sometimes this is something we can check in advance.  For
+   example, if can find a value $a$ such that =f(a)= is positive and a
+   value $b$ such that =f(b)= is negative, the continuity of the
+   function (named) =f= gives us a mathematical guarantee that a zero
+   of the function exists.  
+
+   However, even for continuous unbounded functions there is no
+   algorithm that's guaranteed to locate a zero for /any/ such
+   function.  Some algorithms work better than others, and some are
+   designed to work with particular classes of functions.
+
+   One quite robust (but often slow) method is a method called
+   /bisection/.  This uses the idea above: start by finding values
+   $(a,b)$  such that $f(a)>0>f(b)$.  Then if $f$ is continuous we
+   know there must be a zero on the real interval $[a,b]$.  Divide
+   this interval in half, and evaluate $f((a+b)/2)$.  If this is
+   positive, then we know there must be a zero on the interval
+   $[(a+b)/2,b]$; if negative, that there must be a zero on
+   $[a,(a+b)/2]$.  Take this new smaller interval, and repeat.  Keep
+   going until the evaluation of the function (named) =f= is close to
+   zero.
+
+   The python package =scipy= includes a module =optimize= which
+   includes a variety of different routines to both find optima (i.e.,
+   maxima and minima) as well as closely related routines to find the
+   zeros of functions.  Here's an example of the use of the bisection
+   algorithm:
+#+begin_src ipython
+from scipy.optimize import bisect
+
+x = bisect(lambda x: 1/x-1,.001,100)
+print(x)
+#+end_src
+
+   A much faster method is called the /secant/ method, and was known
+   to the ancient Babylonians and Egyptians at least as early as 1800 BCE.
+   The discovery of the calculus in the 18th century allowed Newton to
+   improve on the secant method, but his approach requires not only
+   the function be continuous, but also continuously differentiable;
+   further, one must supply a function describing the derivatives.
+   Both the secant method and Newton's method are available from
+   =scipy.optimize=.
+#+begin_src ipython
+from scipy.optimize import newton
+
+# If we supply just a function and a starting place we
+# get the secant method:
+   
+x = newton(f,1.01)  # Solution is one; if we start close we should find it!
+print(x)  
+
+x = newton(f,2)  # Not always robust!
+print(x)
+#+end_src
+
+   Now try Newton's method:
+#+begin_src ipython
+df = lambda x: -x**(-2) # Derivative of function named f
+
+# Supply derivative function, get Newton's method
+x = newton(f,2,df)   # Still not necessarily robust!
+print(x)
+#+end_src
+
+   Newton's method works better with polynomials:
+#+begin_src ipython 
+f = lambda x: -1 + x - 3*x**2 + 4*x**3
+
+df = lambda x: 1 - 6*x +12*x**2
+
+x = newton(f,10,df)
+print(x)
+#+end_src
+
+
+
