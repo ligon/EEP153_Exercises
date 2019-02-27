@@ -341,4 +341,161 @@ print(x)
 #+end_src
 
 
+* [EEP153] Week 6
+   :PROPERTIES:
+   :CUSTOM_ID: eep-153-week-6
+   :EXPORT_FILE_NAME: week6.ipynb
+   :END:
+
+Some programming learning goals for week 6:
+
+1. String formatting and operations
+2. Exceptions
+3. More useful pandas practice
+
+** 1. String Formatting Exercise 
+   :PROPERTIES:
+   :CUSTOM_ID: string-formatting-exercise
+   :END:
+
+Use https://pyformat.info as a reference. 
+
+#+BEGIN_SRC ipython
+myCat = { "Name":"Beatrice", "Age":7,"Nickname":"Queen B"}
+
+# Exercise: Print out the string "My cat's name is Beatrice, but we usually call her Queen B."
+#+END_SRC
+
+*** 2. Errors 
+    :PROPERTIES:
+    :CUSTOM_ID: errors
+    :END:
+
+There are two types of errors: syntax errors, and exceptions.
+
+Syntax errors occur when the parser detects an incorrect statement.
+Exception errors occur when whenever syntactically correct Python code
+results in an error. Python comes with various built-in exceptions as
+well as the possibility to create self-defined exceptions.
+
+**** Raising an exception
+     :PROPERTIES:
+     :CUSTOM_ID: raising-an-exception
+     :END:
+
+We can use raise to throw an exception if a condition occurs. For
+example: run the code below, then un-comment the second line of code and
+run again.
+
+#+BEGIN_SRC ipython
+x = '50'
+#if isinstance(x,(str)): raise Exception('x should not be formatted as a string')
+print(x)
+#+END_SRC
+
+**** Try, Except, Finally
+     :PROPERTIES:
+     :CUSTOM_ID: try-except-finally
+     :END:
+
+A try block lets you test a block of code for errors, an except block
+lets you handle the error, and a finally block lets you execute code,
+regardless of the result of the try- and except blocks. 
+
+ You can have multiple except blocks, which allow you to
+respond in a particular way to different types of errors.
+
+ In the example below, try running the code as is, then
+after un-commenting the first line. See you if you can fix the error.
+
+#+BEGIN_SRC ipython
+#w = 20
+y = '25'
+try:
+    print('w = ' + w)
+except NameError:
+    print("Variable w is not defined")
+except:  # You *can* catch all errors, but probably shouldn't.
+    print("Something else went wrong")
+finally:
+    print('y = ' + y)
+#+END_SRC
+
+*** 3. More useful pandas practice
+    :PROPERTIES:
+    :CUSTOM_ID: more-useful-pandas-practice
+    :END:
+
+#+BEGIN_SRC ipython
+import pandas as pd
+import numpy as np
+
+#sample dataset from https://ww2.amstat.org/censusatschool/
+#+END_SRC
+
+#+BEGIN_SRC ipython
+#If your dataset is located in the same folder as your code, reading a CSV is straightforward:
+
+df = pd.read_csv('Example_CAStudents.csv')
+df.head()
+#+END_SRC
+
+#+BEGIN_SRC ipython
+df.index
+#+END_SRC
+
+#+BEGIN_SRC ipython
+df.columns
+#+END_SRC
+
+#+BEGIN_SRC ipython
+#describe() shows a quick statistic summary of your data:
+df.describe()
+#+END_SRC
+
+**** Quick manipulations
+     :PROPERTIES:
+     :CUSTOM_ID: quick-manipulations
+     :END:
+
+#+BEGIN_SRC ipython
+#to transpose your data:
+df.T
+
+#to sort your data by a colum (say we wanted to sort by age, or the column 'Ageyears')
+df.sort_values(by='Ageyears')
+#+END_SRC
+
+**** Selecting data
+     :PROPERTIES:
+     :CUSTOM_ID: selecting-data
+     :END:
+
+#+BEGIN_SRC ipython
+#selecting a single column (these methods get the same result)
+h_1 = df['Height_cm']
+h_2 = df.Height_cm
+#+END_SRC
+
+#+BEGIN_SRC ipython
+#selecting a subset of columns (note that both endpoints are included in the selection)
+df.loc[:, ['Country','ClassGrade']]
+#+END_SRC
+
+#+BEGIN_SRC ipython
+#selecting a subset of rows (note that the second endpoint is *not* included in the selection)
+df[0:2]
+#+END_SRC
+
+#+BEGIN_SRC ipython
+#getting a single value
+df.at[1, 'Superpower']
+#+END_SRC
+
+#+BEGIN_SRC ipython
+# Exercise: use pandas manipulations to construct a sub-dataset of the 5 tallest girls, sorted by age, 
+#    and removing from the data all of the "hours" columns (ie Work_At_Home_Hours)
+
+s = #your code here
+#+END_SRC
 
