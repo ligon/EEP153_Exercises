@@ -1,18 +1,17 @@
 * [EEP153] Week 0
   :PROPERTIES:
-  :EXPORT_FILE_NAME: week0
+  :EXPORT_FILE_NAME: week0.ipynb
   :END:
 ** Learning goals
    1. Open a =jupyter= notebook on =datahub.berkeley.edu=.
    2. Understand simple =python= expressions.
    3. Work with lists & dictionaries.
-   4. Construct =pandas= DataFrame.
-   5. Submit indication of completion.
+   3. Submit indication of completion.
 
 *** Simple Expressions
 Python is a general purpose language, extended via /modules/.
 One important aspect of python are /expressions/.  Here are some examples:
-#+begin_src python
+#+begin_src ipython
 # Arithmetic 
 1 + 1
 
@@ -36,7 +35,7 @@ The above provides examples of:
                   of the objects (/operands/) it's operating on.  
 
 Predict the output of the following two lines:
-#+begin_src python
+#+begin_src ipython
 print(type(1+1))
 print(type("Hello"))
 #+end_src
@@ -45,7 +44,7 @@ print(type("Hello"))
 Strings and integers are simple examples of different data types (or
 objects).  A very important type that is more complicated are
 =lists=.  Here are some examples.  Examine them, and predict the output:
-#+begin_src python
+#+begin_src ipython
 a = [1,2,3]
 b = ["Hello","world"]
 
@@ -54,13 +53,24 @@ print(c)
 print(len(c))  # Here len returns the "length" of the list.
 #+end_src
 
+
+Extra optional practice to refresh yourself with list manipulation and slicing.
+Examine these first, then predict the output.
+#+begin_src ipython
+print(c[2]) # Remember how Python counts arrays.
+print(c[1:2]) # Why does Python only return one item instead of two?
+print(b[0]*4)
+print(c[0::2])
+print(list(map(lambda x: x*2,a)))
+#+end_src
+
 *** Dictionaries
 
 Another very basic kind of compound object are =dicts= (dictionaries;
 also called associative arrays or hashes in other languages).  Predict
 the output:
 
-#+begin_src python :results output
+#+begin_src ipython :results output
 d = {'name': "Barney", 'species': "Dinosaur", 'age': 27, 'color': "Purple"}
 
 print("{name} the {species} is {color}.".format(**d))
@@ -77,7 +87,7 @@ The =pandas= module provides a data structure called a =DataFrame=.
 These are basically rectangular arrays of data, with names for rows
 and columns, rather like a spreadsheet.  In fact, one important thing
 one can do with DataFrames is to import data /from/ spreadsheets.
-#+begin_src python :session
+#+begin_src ipython :session
 import pandas as pd
 
 # Try looking at https://docs.google.com/spreadsheets/d/1ObK5N_5aVXzVHE7ZXWBg0kQvPS3k1enRwsUjhytwh5A in your browser.
@@ -86,23 +96,89 @@ SHEET = "https://docs.google.com/spreadsheets/d/1q1ikP1CXCcLf_Tq6VbhoskOYRvn_nDU
 # The following line goes on-line and turns the spreadsheet into a pandas DataFrame:
 df = pd.read_csv(SHEET + "/export?format=csv")
 
-print(df.head())
+# This line will show us only the first five rows of data. Try removing .head() to see the full list of items.
+# Guess what happens if you replace .head() with .tail(). Try it out!
+df.head()
 #+end_src
 
 If this worked (!) you should be able to see some data from a recent
 shopping trip of mine.  What are the different variables available in
 the DataFrame =df=?  They correspond to the /columns/ of the spreadsheet.
 
-#+begin_src python :session
-print(df.columns)
+#+begin_src ipython :session
+df.columns
 #+end_src
 
 Now, what else can we do?  Let's figure out how much my total grocery
 bill was:
 
-#+begin_src python :session
-print(df['Price'].sum())
+#+begin_src ipython :session
+df['Price'].sum()
 #+end_src
+
+Let's say I'm on a budget. Naturally, we'd want to identify the item(s)
+I'm spending the most on. We can sort the values to investigate further.
+
+#+begin_src ipython :session
+# Note that we're indicating we want to sort by the 'Price' column and specify that it should be in descending order.
+df.sort_values(by='Price', ascending=False).head()
+#+end_src
+
+Everything here looks straightforward, but let's take a closer look at
+Red Endive and calculate the price per pound to make comparison easier.
+
+#+begin_src ipython :session
+# This line selects the 7th item in the dataframe (note the index number is 6 because we start counting at 0 when we use Python)
+# and selects the 'Price' value for this particular item. It divides it by 'Quantity' to get the price per pound.
+df.iloc[6]['Price']/df.iloc[6]['Quantity']
+#+end_src
+
+You'll find throughout the semester that unit price is a pretty useful statistic
+to calculate. Let's do it for all the items on this grocery list. Thankfully we
+don't have to do this one by one.
+
+#+begin_src ipython :session
+# This line creates a new column in our dataframe named 'Unit Price' and populates each row with the respective price value 
+# divided by the quantity value.
+df['Unit Price'] = df['Price']/df['Quantity']
+df.head()
+#+end_src
+
+Almost there! Let's pare down our dataframe to look more friendly to the eye. We
+don't want to see the following columns: Date, Location, NDB. Also, we only want to see
+the first five items of the dataframe. 
+
+In the previous blocks, we used .iloc which stands for index (or integer) location. We used integers to specify which
+columns we wanted. In this section, we'll use .loc which allows us to use column labels. For extra practice, try to
+achieve the same result but by using .iloc instead.
+
+#+begin_src ipython :session
+
+# Note that in both the .iloc and .loc syntax, the first set of parameters refer to rows and the second set refer to columns.
+df.loc[0:5, ['Food', 'Quantity', 'Units', 'Price', 'Unit Price']]
+#+end_src
+
+Here's one last exercise that might be useful. Often times you will only want to view data
+that fits a certain criterion. In this case, let's only look at items where the unit price
+is less than 1.
+
+#+begin_src ipython :session
+# This line will return all rows in the dataframe where the Unit Price is < 1. Using what we've covered prior,
+# modify the view of this dataframe to only include Food and Unit Price.
+df[df['Unit Price'] < 1]
+#+end_src
+
+Extra things to refresh that may be helpful for Project 1: basic visualizations, datatypes, index, joins.
+
+*** Final words
+Throughout this class, you will be exposed to a variety of Python modules and tools and the data that you work with
+may or may not be cleaned. In any case, learning how to find and use online documentation/resources is a
+valuable skill that will benefit you greatly in this course and beyond. Be sure to utilize our course =piazza=
+for any questions you might have - there's a good chance a peer may have a similar question or have the answer.
+As the semester goes on, course staff will update the "Useful Links/Resources" post with any outside Python resources 
+that may be helpful for the whole class.
+
+ 
 
 * [EEP153] Week 3
   Some programming learning goals for week 3:
