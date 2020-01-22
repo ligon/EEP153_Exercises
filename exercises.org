@@ -103,6 +103,7 @@ bill was:
 #+begin_src python :session
 print(df['Price'].sum())
 #+end_src
+
 * [EEP153] Week 3
   Some programming learning goals for week 3:
    1. List comprehensions
