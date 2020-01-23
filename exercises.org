@@ -6,7 +6,8 @@
    1. Open a =jupyter= notebook on =datahub.berkeley.edu=.
    2. Understand simple =python= expressions.
    3. Work with lists & dictionaries.
-   3. Submit indication of completion.
+   4. Work with =pandas.DataFrames=.
+   5. Submit indication of completion.
 
 *** Simple Expressions
 Python is a general purpose language, extended via /modules/.
