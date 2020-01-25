@@ -179,7 +179,12 @@ for any questions you might have - there's a good chance a peer may have a simil
 As the semester goes on, course staff will update the "Useful Links/Resources" post with any outside Python resources 
 that may be helpful for the whole class.
 
- 
+* [EEP153] Week 1 
+#+begin_src ipython
+
+!gpg -d --batch --passphrase "" students-9093fa174318.json.gpg > students-9093fa174318.json
+
+#+end_src 
 
 * [EEP153] Week 3
   Some programming learning goals for week 3:
