@@ -200,7 +200,10 @@ that may be helpful for the whole class.
 
 #+begin_src ipython
 
-!gpg -d --batch --passphrase "REPLACE_WITH_PASSPHRASE" students-9093fa174318.json.gpg > students-9093fa174318.json
+# Replace PASSPHRASE in the next comment with the secret we'll share
+# with you in class.
+
+!gpg -d --batch --passphrase "PASSPHRASE" students-9093fa174318.json.gpg > students-9093fa174318.json
 
 #+end_src
 
