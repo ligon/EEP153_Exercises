@@ -180,41 +180,68 @@ As the semester goes on, course staff will update the "Useful Links/Resources" p
 that may be helpful for the whole class.
 
 * [EEP153] Week 1 
+  Some programming learning goals for week 1:
+   1. Decrypting Google Drive API credentials using GPG
+   2. Using gspread to =read= Google Spreadsheet data
+   3. Using gspread to =write= Google Spreadsheet data
+
+** Credential decryption
+   Protecting access to sensitive information is paramount to any
+   organization's security. In this class, the information we will be
+   sharing with you is not highly sensitive. However, learning how to
+   work with decryption is a handy skill that you might find useful
+   after this course.
+
+   In this cell, we will run a shell command that leverages the GPG
+   module to decrypt the file =students-9093fa174318.json.gpg= located
+   in your server. Notice how we do this with the =!= symbol before
+   typing in the rest of the code. Be sure to insert the passphrase
+   provided to you.
+
 #+begin_src ipython
 
-!gpg -d --batch --passphrase "" students-9093fa174318.json.gpg > students-9093fa174318.json
+!gpg -d --batch --passphrase "REPLACE_WITH_PASSPHRASE" students-9093fa174318.json.gpg > students-9093fa174318.json
 
-#+end_src 
+#+end_src
 
+   Take a look in your jupyter server directory and you should see a
+   new file named =students-9093fa174318.json=. Protect this file
+   carefully, as anyone who has this can now access the spreadsheets
+   we'll introduce you to in this course.
+
+** Reading Google Spreadsheet data
+   
+
+** Writing Google Spreadsheet data
 * [EEP153] Week 3
   Some programming learning goals for week 3:
-   1. List comprehensions
-   2. Some string operations
-   3. Understand simple recursions.
-   4. Use lambda expressions (anonymous functions)
-   5. Root-finding for equations of one variable
+  1. List comprehensions
+  2. Some string operations
+  3. Understand simple recursions.
+  4. Use lambda expressions (anonymous functions)
+  5. Root-finding for equations of one variable
 ** List comprehensions
    You're already familiar with =for= loops like the following, which 
    computes the squares of a list of numbers:
-#+begin_src ipython
+   #+begin_src ipython
 L = []
 for i in [0,1,2]:
     L.append(i**2)
 
 print(L)
-#+end_src
+   #+end_src
    This is pretty clear, but not very elegant.  Consider instead the
    following /list comprehension/:
-#+begin_src ipython
+   #+begin_src ipython
 L = [i**2 for i in [0,1,2]]
 
 print(L)
-#+end_src
+   #+end_src
 
 ** Simple recursions
    A recursion, or a recursive function, is a function that may call
    itself when evaluated.  Here's a very simple recursion:
-#+begin_src ipython
+   #+begin_src ipython
 def foo(n):
     """Sum of postive integers up to n."""
     if n==0:
@@ -223,7 +250,7 @@ def foo(n):
         return n + foo(n-1)
 
 foo(43)
-#+end_src
+   #+end_src
  
    The fact that evaluating =foo(n)= involves calling =foo(n-1)= is
    what makes this a recursion.
@@ -233,21 +260,21 @@ foo(43)
    simple pattern we're after.
 
    Here's another, which operates on lists of numbers:
-#+begin_src ipython
+   #+begin_src ipython
 def bar(x):
     """What does this function do, and how does it do it?"""
     if x==[]: return 0 
- 
+    
     try:
         return bar(x[0]) + bar(x[1:])
     except TypeError: # x not a list?
         return x   
-#+end_src
+   #+end_src
 
-#+begin_src ipython
+   #+begin_src ipython
 # Try calling bar after predicting its output:
 bar([21,14,3,4])
-#+end_src
+   #+end_src
 
    The function =bar= also could be implemented much more efficiently!
 
@@ -255,46 +282,46 @@ bar([21,14,3,4])
    below).  This takes a list (or tuple) which may consist of lists,
    and "flattens" it so that none of the elements are lists.  For
    example, =flatten([1,[2,3]]) -> [1,2,3]=.
-#+begin_src ipython
+   #+begin_src ipython
 def flatten(a):
      if not isinstance(a,(tuple,list)): return [a]
      if len(a)==0: return []
      return flatten(a[0])+flatten(a[1:])
 
 print(flatten([1,[2,3]]))
-#+end_src
+   #+end_src
 
 ** Some string operations
    We're interested here in a couple of simple ways to map strings
    into lists and lists into strings.  One common problem: you may
    have a string like "1,2,3,fiver".  
-#+begin_src ipython
+   #+begin_src ipython
 s = "1,2,3,fiver"
 
 # s can be treated like a list.  What is s[1]?
 s[1]
-#+end_src
+   #+end_src
 
    So strings can be treated as lists of characters, at least for some
    purposes.  But the string above suggests a /different/ list, one
    with four elements.  To obtain this, consider
-#+begin_src ipython
+   #+begin_src ipython
 t = s.split(',')
 print(t)
-#+end_src
+   #+end_src
 
    We can also go the other way; given a list, we can turn it into a
    string, with the different elements separated by a string of our choice:
-#+begin_src ipython
+   #+begin_src ipython
 " and ".join(t)
-#+end_src
+   #+end_src
 
    So how about using recursions and these string operations to
    actually do something useful?  Let's write a function that can take
    a string representing ranges of numbers, like "1,2-4,3-5,0-3" and
    return list of the numbers that appear (perhaps implicitly) in the
    string.
-#+begin_src ipython
+   #+begin_src ipython
 def range_parser(s,unique=False):
     """
     Parse a string of numbers including ranges indicated by '-',
@@ -318,7 +345,7 @@ def range_parser(s,unique=False):
             return list(range(a,b))
         
 print(range_parser("1,2-4,3-5,0-3",unique=True))
-#+end_src
+   #+end_src
 
 
 
@@ -326,7 +353,7 @@ print(range_parser("1,2-4,3-5,0-3",unique=True))
    This is incredibly obvious to some people, but for others it takes
    some work to wrap their heads around.  But hopefully this will make
    this all obvious.  *Predict the output*:
-#+begin_src ipython
+   #+begin_src ipython
 # Consider the two following functions
 
 def f(x):
@@ -335,7 +362,7 @@ def f(x):
 g = lambda x: 1/x -1
 
 print(f(3) - g(3))
-#+end_src
+   #+end_src
    It may help to think of objects like =g= or =f= not as functions,
    but instead as names of or references to functions.
 
@@ -344,7 +371,7 @@ print(f(3) - g(3))
    scalar argument and returns a real number, then we may often be
    interesting in equations such as 
    \[
-      f(x) = 0;
+   f(x) = 0;
    \]
    the problem then is to find a value of $x$ that satisfies the
    equation.
@@ -377,12 +404,12 @@ print(f(3) - g(3))
    maxima and minima) as well as closely related routines to find the
    zeros of functions.  Here's an example of the use of the bisection
    algorithm:
-#+begin_src ipython
+   #+begin_src ipython
 from scipy.optimize import bisect
 
 x = bisect(lambda x: 1/x-1,.001,100)
 print(x)
-#+end_src
+   #+end_src
 
    A much faster method is called the /secant/ method, and was known
    to the ancient Babylonians and Egyptians at least as early as 1800 BCE.
@@ -392,7 +419,7 @@ print(x)
    further, one must supply a function describing the derivatives.
    Both the secant method and Newton's method are available from
    =scipy.optimize=.
-#+begin_src ipython
+   #+begin_src ipython
 from scipy.optimize import newton
 
 # If we supply just a function and a starting place we
@@ -403,26 +430,26 @@ print(x)
 
 x = newton(f,2)  # Not always robust!
 print(x)
-#+end_src
+   #+end_src
 
    Now try Newton's method:
-#+begin_src ipython
+   #+begin_src ipython
 df = lambda x: -x**(-2) # Derivative of function named f
 
 # Supply derivative function, get Newton's method
 x = newton(f,2,df)   # Still not necessarily robust!
 print(x)
-#+end_src
+   #+end_src
 
    Newton's method works better with polynomials:
-#+begin_src ipython 
+   #+begin_src ipython 
 f = lambda x: -1 + x - 3*x**2 + 4*x**3
 
 df = lambda x: 1 - 6*x +12*x**2
 
 x = newton(f,10,df)
 print(x)
-#+end_src
+   #+end_src
 
 
 * [EEP153] Week 6
@@ -582,4 +609,3 @@ df.at[1, 'Superpower']
 
 s = #your code here
 #+END_SRC
-
