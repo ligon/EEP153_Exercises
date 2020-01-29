@@ -179,8 +179,11 @@ for any questions you might have - there's a good chance a peer may have a simil
 As the semester goes on, course staff will update the "Useful Links/Resources" post with any outside Python resources 
 that may be helpful for the whole class.
 
-* [EEP153] Week 2 
-  Some programming learning goals for week 2:
+* [EEP153] Week 1
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: week1.ipynb
+  :END:
+  Some programming learning goals for week 1:
    1. Decrypting Google Drive API credentials using GPG
    2. Using gspread to =read= Google Spreadsheet data
    3. Using gspread to =write= Google Spreadsheet data
@@ -299,7 +302,7 @@ row_vals[:5], col_vals[:5]
 import pandas as pd
 
 data = wks.get_all_values()
-headers = wks.pop(0)
+headers = data.pop(0)
 data_df = pd.DataFrame(data,columns=headers)
 data_df.head() 
 #+end_src
@@ -323,7 +326,7 @@ data_df.head()
 # This cell changes the spreadsheet and opens the first worksheet.
 spreadsheet = '1dhJUonTO5AcKgvLX06hjhyQOA9BtcUmVdKf-0eNIKzw'
 sh = gc.open_by_key(spreadsheet)
-wks = gc.get_worksheet(0)
+wks = sh.get_worksheet(0)
 wks.update_acell('A2', 'Joshua Nuesca')
 #+end_src
 
@@ -349,7 +352,7 @@ wks.update_acell('CELL', 'YOUR NAME')
 # section for guidance on how to do this if you forgot.
 #+end_src
 
-   This concludes Week 2 exercises: reading and writing data to/from
+   This concludes Week 1 exercises: reading and writing data to/from
    Google Spreadsheets programmatically using Python. One area not
    covered is writing entire =pandas= Dataframes to a spreadsheet. For
    larger datasets, its recommended to use the =gspread-dataframe=
