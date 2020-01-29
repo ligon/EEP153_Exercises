@@ -179,8 +179,8 @@ for any questions you might have - there's a good chance a peer may have a simil
 As the semester goes on, course staff will update the "Useful Links/Resources" post with any outside Python resources 
 that may be helpful for the whole class.
 
-* [EEP153] Week 1 
-  Some programming learning goals for week 1:
+* [EEP153] Week 2 
+  Some programming learning goals for week 2:
    1. Decrypting Google Drive API credentials using GPG
    2. Using gspread to =read= Google Spreadsheet data
    3. Using gspread to =write= Google Spreadsheet data
@@ -199,12 +199,10 @@ that may be helpful for the whole class.
    provided to you.
 
 #+begin_src ipython
-
 # Replace PASSPHRASE in the next comment with the secret we'll share
 # with you in class.
 
 !gpg -d --batch --passphrase "PASSPHRASE" students-9093fa174318.json.gpg > students-9093fa174318.json
-
 #+end_src
 
    Take a look in your jupyter server directory and you should see a
@@ -213,7 +211,102 @@ that may be helpful for the whole class.
    we'll introduce you to in this course.
 
 ** Reading Google Spreadsheet data
-   
+
+   In this section, we'll read data from Google Spreadsheet using a
+   module called =GSpread=. You're not expected to be fully understand
+   all the functions of this module, though knowing how to read
+   spreadsheet data with basic =GSpread= functions may be helpful for
+   this project and beyond.
+
+*** Initial Set-up
+   In this first cell, we provide the initial setup that will allow
+   you to access this spreadsheet:
+   https://docs.google.com/spreadsheets/d/1xoAe1BlXb7m3ZSB-Tm5XkkVn0W6xkS3y5zl48TqVSsk/edit?usp=sharing. 
+
+#+begin_src ipython
+# !pip install gspread
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+scope = ['https://spreadsheets.google.com/feeds',
+         'https://www.googleapis.com/auth/drive']
+#+end_src
+
+   Now, we'll input the credentials you decrypted in the previous
+   section and specify the spreadsheet we want to open in Python.
+
+#+begin_src ipython
+# This should be the default .json file pathway, but feel free to change
+# json_file if your pathway if different.
+
+json_file = 'students-9093fa174318.json'
+spreadsheet = 1xoAe1BlXb7m3ZSB-Tm5XkkVn0W6xkS3y5zl48TqVSsk
+credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
+gc = gspread.authorize(credentials)
+
+sh = gc.open_by_key(spreadsheet)
+
+#+end_src
+
+*** Accessing Values
+   Our spreadsheet is now open by an instance of =gspread=, and you
+   can access it in the variable =sh=. To explore this data, you
+   might find more value exploring it in your browser. A couple
+   technicalities to be aware of:
+      -  A =spreadsheet= is the overall container that holds multiple
+         worksheets.
+      -  A =worksheet= is a single tab in a spreadsheet.
+
+#+begin_src ipython
+# This cell provides you with a list of all worksheets contained in the
+# spreadsheet. If you already know which spreadsheet you want to access,
+# you can ignore this cell.
+
+sh.worksheets()
+#+end_src
+
+#+begin_src ipython
+# This cell allows you to access a particular spreadsheet within the worksheet.
+# Even if your spreadsheet has only worksheet, you still must specify the
+# worksheet you wish to read data from.
+
+wks = sh.worksheet("Expenditures")
+
+# Alternatively, you can use the following code snippets to achieve the same result.
+# wks = sh.get_worksheet(0)
+# wks = sh.sheet1
+#+end_src
+
+   Now that the worksheet is selected, we can begin reading data.
+
+#+begin_src ipython
+row_vals = wks.row_values(1) # All values in row 1, stored in an array. 
+col_vals = wks.col_values(1) # All values in column 1, stored in an array.
+
+# This line gives you the first five values of row_vals and col_vals. Feel free
+# to change around the indices to see more data, or skip to the next cell for a
+# more holistic view.
+
+row_vals[:5], col_vals[:5]
+#+end_src
+
+   A more standard usage of =gspread= is reading this data into a
+   =pandas= dataframe. This next cell does exactly that. Feel free to
+   use the exercises from Week 0 to refresh =pandas= specific
+   functions to manipulate and explore the dataframe. 
+
+#+begin_src ipython
+import pandas as pd
+
+data = wks.get_all_values()
+headers = wks.pop(0)
+data_df = pd.DataFrame(data,columns=headers)
+data_df.head() 
+#+end_src
+
+   This is just a basic introduction to reading data from Google
+   Spreadsheets using =GSpread=. For more information and
+   documentation, visit https://gspread.readthedocs.io/en/latest/index.html.
 
 ** Writing Google Spreadsheet data
 * [EEP153] Week 3
