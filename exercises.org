@@ -184,9 +184,9 @@ that may be helpful for the whole class.
   :EXPORT_FILE_NAME: week1.ipynb
   :END:
   Some programming learning goals for week 1:
-   1. Decrypting Google Drive API credentials using GPG
-   2. Using gspread to =read= Google Spreadsheet data
-   3. Using gspread to =write= Google Spreadsheet data
+   1. Decrypting Google Drive API credentials using =GPG=
+   2. Using =gspread= to read Google Spreadsheet data
+   3. Using =gspread= to write Google Spreadsheet data
 
 ** Credential decryption
    Protecting access to sensitive information is paramount to any
@@ -302,7 +302,7 @@ row_vals[:5], col_vals[:5]
 import pandas as pd
 
 data = wks.get_all_values()
-headers = data.pop(0)
+headers = wks.pop(0)
 data_df = pd.DataFrame(data,columns=headers)
 data_df.head() 
 #+end_src
@@ -326,8 +326,7 @@ data_df.head()
 # This cell changes the spreadsheet and opens the first worksheet.
 spreadsheet = '1dhJUonTO5AcKgvLX06hjhyQOA9BtcUmVdKf-0eNIKzw'
 sh = gc.open_by_key(spreadsheet)
-wks = sh.get_worksheet(0)
-wks.update_acell('A2', 'Joshua Nuesca')
+wks = gc.get_worksheet(0)
 #+end_src
 
    Now that we're in the new spreadsheet and selected the first
