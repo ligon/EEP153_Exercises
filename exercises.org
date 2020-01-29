@@ -240,7 +240,7 @@ scope = ['https://spreadsheets.google.com/feeds',
 # json_file if your pathway if different.
 
 json_file = 'students-9093fa174318.json'
-spreadsheet = 1xoAe1BlXb7m3ZSB-Tm5XkkVn0W6xkS3y5zl48TqVSsk
+spreadsheet = '1xoAe1BlXb7m3ZSB-Tm5XkkVn0W6xkS3y5zl48TqVSsk'
 credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
 gc = gspread.authorize(credentials)
 
@@ -309,6 +309,53 @@ data_df.head()
    documentation, visit https://gspread.readthedocs.io/en/latest/index.html.
 
 ** Writing Google Spreadsheet data
+
+   In this section, we'll write data to a new Google
+   Spreadsheet located here:
+   https://docs.google.com/spreadsheets/d/1dhJUonTO5AcKgvLX06hjhyQOA9BtcUmVdKf-0eNIKzw/edit?usp=sharing.
+   You'll notice that you can only view the spreadsheet, not
+   edit. However, using the credentials provided to you previously,
+   you'll be able to submit an indication of completion by writing
+   your name in two places: =Master Sheet= and the tab corresponding
+   to your team assignment. 
+
+#+begin_src ipython
+# This cell changes the spreadsheet and opens the first worksheet.
+spreadsheet = '1dhJUonTO5AcKgvLX06hjhyQOA9BtcUmVdKf-0eNIKzw'
+sh = gc.open_by_key(spreadsheet)
+wks = gc.get_worksheet(0)
+wks.update_acell('A2', 'Joshua Nuesca')
+#+end_src
+
+   Now that we're in the new spreadsheet and selected the first
+   worksheet, open up the link above and identify the cell you want to
+   put your name in. (Example: B3)
+
+#+begin_src ipython
+# Make sure to update 'cell' with the cell you would like to update, and 'your name'
+# with your name!
+wks.update_acell('CELL', 'YOUR NAME')
+
+# Alternatively, you can update the cell using the following syntax:
+#wks.update_cell(ROW_NUM, COL_NUM, 'YOUR NAME')
+#+end_src
+
+   If you look back at the spreadsheet, you should see your name in
+   the cell you selected. Let's do it one more time in the tab with
+   your team name. Try this one by yourself!
+
+#+begin_src ipython
+# HINT: Make sure to change the spreadsheet you've selected, look at the previous
+# section for guidance on how to do this if you forgot.
+#+end_src
+
+   This concludes Week 2 exercises: reading and writing data to/from
+   Google Spreadsheets programmatically using Python. One area not
+   covered is writing entire =pandas= Dataframes to a spreadsheet. For
+   larger datasets, its recommended to use the =gspread-dataframe=
+   module instead of looping through and updating cells
+   one-by-one. Check out this module here: https://pythonhosted.org/gspread-dataframe/.
+
 * [EEP153] Week 3
   Some programming learning goals for week 3:
   1. List comprehensions
