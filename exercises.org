@@ -179,6 +179,7 @@ for any questions you might have - there's a good chance a peer may have a simil
 As the semester goes on, course staff will update the "Useful Links/Resources" post with any outside Python resources 
 that may be helpful for the whole class.
 
+
 * [EEP153] Week 1
   :PROPERTIES:
   :EXPORT_FILE_NAME: week1.ipynb
@@ -357,6 +358,161 @@ wks.update_acell('CELL', 'YOUR NAME')
    larger datasets, its recommended to use the =gspread-dataframe=
    module instead of looping through and updating cells
    one-by-one. Check out this module here: https://pythonhosted.org/gspread-dataframe/.
+
+
+* [EEP153] Week 2
+  Some programming learning goals for week 2:
+   1. Writing =pandas= dataframes to a Google Spreadsheet using
+      =gpsread-dataframe=
+   2. Docstrings, documentation, comments
+   2. Inspecting objects
+   3. Interpreting exceptions
+   4. Reading tracebacks
+
+** Writing a Pandas dataframe to Google Spreadsheet
+   In last week's exercise, we explored the basic functionality of
+   =gspread= to read and write spreadsheet data using Python. Writing
+   cell data one by one, however, is not the most efficient way to
+   write data especially if you have a dataframe with thousands of
+   observations. Here, we'll extend our knowledge from last week to
+   write data directly from a dataframe into a spreadsheet.
+
+
+   In this cell, we setup our notebook to use the packages we'll need
+   for the demo. You may need to uncomment the first two lines
+   depending on if you encounter a =ModuleNotFoundError= or
+   =NameError=.
+
+#+begin_src ipython
+#!pip install wbdata
+#!pip install gspread-pandas
+import wbdata as wb
+import pandas as pd
+import gspread_pandas as gsp 
+#+end_src
+
+   Remember how we decrypted credential keys last week? We're going to
+   do the same thing here using the team-specific keys shared with
+   your group on Piazza last week. Look in the
+   =EEP153_Materials/Project 1= respository on =Datahub= to get the
+   file name of the =.json.gpg= credentials file that corresponds to
+   your team. Then look at Piazza for your team-specific passphrase.
+
+#+begin_src ipython
+# Replace PASSPHRASE with the secret phrase we shared with your team on
+# Piazza. Replace FILENAME with the filename (without the extension)
+# of the encrypted credential file.
+
+!gpg -d --batch --passphrase "PASSPHRASE" FILENAME.json.gpg > FILENAME.json
+#+end_src
+
+   Now, we have the credentials that will allow you to access your
+   team-specific Google Drive. It is with these credential that you
+   will create and share spreadsheet data with your team. In this next
+   cell, we set up our =gspread_pandas= client with our credentials.
+
+#+begin_src ipython
+# Replace FILENAME with the filename of your decrypted .json file.
+
+user_config = gsp.conf.get_config(conf_dir='./',file_name='FILENAME')
+user_creds = gsp.conf.get_creds(config=user_config)
+client = Client(creds=user_creds)
+#+end_src
+
+   Now we're in your team drive, except you can't really see
+   it. We can explore what we're working with without your
+   browser. =gspread-pandas= provides a series of functions that will
+   allow us to do exactly this. 
+
+#+begin_src ipython
+# Returns all spreadsheet files you have access to.
+client.list_spreadsheet_files()
+
+# Returns all available folders or directories you can access.
+#client.directories
+
+# Returns information for the root directory.
+#client.root
+
+# Returns the email you can share spreadsheets to.
+#client.email
+#+end_src
+
+   Presumably, your Drive is empty at the moment. Before we start
+   creating sheets into the main directory, let's create a folder to
+   provide some structure.
+
+#+begin_src ipython
+# You can replace "W2 Example" with whatever file name you like.
+client.create_folder('W2 Example')
+#+end_src
+
+   You'll notice that a dictionary was returned. It confirms the
+   pathway of the folder and a unique ID you can refer to at any
+   time. If you were to try copy and pasting this ID and access this
+   folder on your browser, you'll find that you won't have access!
+   We'll cover permissions later.
+
+   Now, we'll create a spreadsheet and move it to the new
+   folder. This spreadsheet will serve as our container for our
+   dataframe we'll create.
+
+#+begin_src ipython
+# If you changed your folder path or name in the previous cell, make sure to 
+# change it here too.
+spread = Spread('My wbdata', create_spread=True,creds=user_creds)
+spread.move('W2 Example')
+
+# To confirm we've successfully moved it over, this next line should show you
+# that 'My wbdata' is in the 'W2 Example' folder.
+client.find_spreadsheet_files_in_folders('W2 Example')
+#+end_src
+
+   Let's create a =Pandas= dataframe to populate =My
+   wbdata=. Hopefully this next cell looks a little familiar.
+
+#+begin_src ipython
+variable_labels = {"SP.POP.TOTL":"Total Population",
+                  "SP.POP.TOTL.FE.IN":"Total Female Population",
+                  "SP.POP.TOTL.MA.IN":"Total Male Population"}
+chn = wb.get_dataframe(variable_labels, country="CHN")
+chn = chn.iloc[1:,]
+chn.head()
+#+end_src
+
+   Moving it to our spreadsheet is a one-liner. Run the next line and
+   you're done!
+
+#+begin_src ipython
+spread.df_to_sheet(chn)
+#+end_src
+
+   If you don't believe it, run the next line to give yourself access
+   to see it in your browser. Then, check your email.
+
+#+begin_src ipython
+spread.add_permission('YOUREMAIL|reader')
+#+end_src
+
+   You can now easily take this Google Spreadsheet data and put it
+   into a =Pandas= dataframe for manipulation in python in a similar
+   fashion.
+
+#+begin_src ipython
+chn2 = spread.sheet_to_df()
+chn2.head()
+#+end_src
+
+   This was a high-level introduction to =gspread-pandas=. For more
+   information and functions that is provided in this package, check
+   out the documentation here:
+   https://gspread-pandas.readthedocs.io/en/latest/getting_started.html.
+
+** Docstrings, documentation, comments
+** Inspecting objects
+** Interpreting exceptions
+** Reading tracebacks
+** Exercises
 
 * [EEP153] Week 3
   Some programming learning goals for week 3:
@@ -596,7 +752,7 @@ x = newton(f,10,df)
 print(x)
    #+end_src
 
-
+   
 * [EEP153] Week 6
    :PROPERTIES:
    :CUSTOM_ID: eep-153-week-6
