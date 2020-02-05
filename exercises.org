@@ -361,6 +361,9 @@ wks.update_acell('CELL', 'YOUR NAME')
 
 
 * [EEP153] Week 2
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: week2.ipynb
+  :END:
   Some programming learning goals for week 2:
    1. Writing =pandas= dataframes to a Google Spreadsheet using
       =gpsread-dataframe=
@@ -369,7 +372,7 @@ wks.update_acell('CELL', 'YOUR NAME')
    3. Interpreting exceptions
    4. Reading tracebacks
 
-** Writing a Pandas dataframe to Google Spreadsheet
+** Writing a =pandas.DataFrame= to Google Spreadsheet
    In last week's exercise, we explored the basic functionality of
    =gspread= to read and write spreadsheet data using Python. Writing
    cell data one by one, however, is not the most efficient way to
@@ -394,7 +397,7 @@ import gspread_pandas as gsp
    Remember how we decrypted credential keys last week? We're going to
    do the same thing here using the team-specific keys shared with
    your group on Piazza last week. Look in the
-   =EEP153_Materials/Project 1= respository on =Datahub= to get the
+   =EEP153_Materials/Project 1= respository on =datahub= to get the
    file name of the =.json.gpg= credentials file that corresponds to
    your team. Then look at Piazza for your team-specific passphrase.
 
@@ -403,7 +406,7 @@ import gspread_pandas as gsp
 # Piazza. Replace FILENAME with the filename (without the extension)
 # of the encrypted credential file.
 
-!gpg -d --batch --passphrase "PASSPHRASE" ./EEP153_Materials/Project1/FILENAME.json.gpg > ./EEP153_Exercises/FILENAME.json
+!gpg -d --batch --passphrase "PASSPHRASE" ./EEP153_Materials/Project1/FILENAME.json.gpg > ./EEP153_Exercises/Project1/FILENAME.json
 #+end_src
 
    Now, we have the credentials that will allow you to access your
@@ -543,7 +546,7 @@ def f(a, b, c):
     plt.show()
 #+end_src
 
-   In the cell above, we are introduced to a new function that calls a
+   In the cell above, we are introduced to a new function =f= that calls a
    series of functions from =geopandas=. The author didn't do a great
    job at picking descriptive labels for the parameters used in this
    function. Normally, we could decipher enough to experiment with the
@@ -572,8 +575,8 @@ geopandas.points_from_xy(a['u'], a['v'])
    docstring which gives an example that looks suspiciously similar to
    this implementation. 
 
-   =u= looks to be x-coordinates and =v= looks like it could be
-   y-coordinates. We might reasonably guess that these may be
+   =u= looks to be \(x\)-coordinates and =v= looks like it could be
+   \(y\)-coordinates. We might reasonably guess that these may be
    coordinates for a map (perhaps longitude and latitude), given that
    geopandas is a mapping tool.
 
@@ -586,10 +589,10 @@ world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
 #world.head()
 #+end_src
 
-   We see in the next line =world[world.name == b]= which is a way of
+   We see in the next line =world[world.name ==== b]= which is a way of
    filtering the =world= dataframe for rows in which the value in
    column =name= is equal to some parameter =b=. Looking at
-   =world.head=, we can see that the =name= column is filled with what
+   =world.head()=, we can see that the =name= column is filled with what
    looks like countries. It might be reasonable to infer that in the
    next line (referenced in the code block below), the function is
    looking to plot one particular country.
@@ -599,7 +602,7 @@ world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
 ax = world[world.name == b].plot(color='white', edgecolor='gray')
 #+end_src
 
-   The last line we'll run through in depthly is the next one. Similar
+   The last line we'll run through in depth is the next one. Similar
    to before, read the docstring and guess what will happen. We can't
    run this cell because we haven't defined gdf properly.
 
@@ -609,8 +612,8 @@ gdf.plot(ax=ax, color='red',marker='o')
 
    Here's the rest of the function for your reference. The remainder
    of the lines don't rely on =geopandas=. Rather, they are native to
-   =Python= and =matplotlib=. Check out the docstrings using SHIFT +
-   TAB or ?.
+   =python= and =matplotlib= (the latter imported as =plt=, see first
+   code block above). Check out the docstrings using SHIFT + TAB or ?.
 
 #+begin_src ipython
 for i, j, k in zip(df['u'], df['v'], df['t']):
@@ -622,14 +625,14 @@ plt.ylabel('y')
 plt.show()
 #+end_src
 
-   Our final observations: =c= is a string that is modifying =plt= through
-   =.title=. We can assume then that =c= is a title of a plot that
-   will inevitably be returned as shown by the last line
-   =plt.show()=. We also see =df= has a column =t= that
-   corresponds to some =k=. Upon closer inspection of =.annotate=,
-   this is a function that takes strings and plots it on specific
-   points on a map. We can guess that =t= is filled with text labels
-   of some sort.
+   Our final observations: =c= is a string that is being passed to a
+   function =title= in the package (aliased as) =plt=.  We can assume
+   then that =c= is a title of a plot that will inevitably be returned
+   as shown by the last line =plt.show()=. We also see =df= has a
+   column =t= that corresponds to some =k=. Upon closer inspection of
+   =.annotate=, this is a function that takes strings and plots it on
+   specific points on a map. We can guess that =t= is filled with text
+   labels of some sort.
 
    Let's recap what we think is going on here. This is a function that
    takes three arguments: dataframe =(a)=, country =(b)=, title
@@ -644,8 +647,7 @@ df = pd.DataFrame(
      'u': [-0.1278,-3.1883,-3.1791,-5.9301],
      'v': [51.5074,55.9533,51.4816,54.5973]})
 
-f(df,'United Kingdom','Capitals of the countries within the United
-Kingdom')
+f(df,'United Kingdom','Capitals of the countries within the United Kingdom')
 #+end_src
 
    Now that we've successfully deciphered this function. Let's do
@@ -815,23 +817,12 @@ print("The total population of China in", chn.index.values[0], "is", int(chn.loc
 def twentyfirst_cent_pop(cntry_code, graph=False):
     variable_labels = {"SP.POP.TOTL":"Total Population"}
     
-    try:
-        df = wb.get_dataframe(variable_labels, country=cntry_code)
-    except:
-        if wb.search_countries(cntry_code, display=False) == []:
-            print("Hm, couldn't find anything for:", cntry_code)
-            return
-        else:
-            print("Do you mean one of these?")
-            results = wb.search_countries(cntry_code, display=False)
-            for i in results:
-                print(i['id'], "-", i['name'])
-            return
+    df = wb.get_dataframe(variable_labels, country=cntry_code)
 
     df.index = df.index.astype(int).values
     df = df.loc[2018:2000,]
     
-    if graph==True:
+    if graph:
         lines = df.plot.line()
         plt.title('Total population of ' + cntry_code + ' over the 21st c.')
         plt.xlabel('Year')
@@ -844,14 +835,14 @@ twentyfirst_cent_pop("JPN",graph=True).head()
 
 #+begin_src ipython
 # What happens if we purposefully break this function?
-twentyfirst_cent_pop(" ").head()
+twentyfirst_cent_pop("").head()
 #+end_src
 
-   When we pass an empty string or a string full of whitespaces, our
-   function raises a TypeError and mentions something about a
-   MultiIndex. Using the traceback, we see that line 18 is having an
-   issue. We know it successfully gets through the =try= statement, 
-   and we can verify that by adding a print statement.
+   When we pass an empty string, our function raises a TypeError and
+   mentions something about a MultiIndex. Using the traceback, we see
+   that line 5 is having an issue. We know it successfully gets
+   through the =wb.get_dataframe= statement, and we can verify that by adding a
+   print statement.
 
    Take a look at what =df= is when we pass in an empty string into
    the function. 
@@ -861,8 +852,8 @@ twentyfirst_cent_pop(" ").head()
 # behavior is exhibited when we run our function: a MultiIndex with all 
 # countries and years.
 
-wb.search_countries("",display=True)
-#wb.get_dataframe({"SP.POP.TOTL":"Total Population"}, country=" ")
+#wb.search_countries("",display=True)
+wb.get_dataframe({"SP.POP.TOTL":"Total Population"}, country=" ")
 #+end_src
 
    Now that we've visualized the problem (MultiIndex instead of a
@@ -883,10 +874,10 @@ wb.search_countries("",display=True)
    they can get on their way.
    
 ** Test Your Understanding
-   1. Using =Pandas= and =gspread-dataframe=, each team should submit
+   1. Using =pandas= and =gspread-dataframe=, each team should submit
       their attendance by sharing a spreadsheet with the following
       columns: First Name, Last Name, E-mail. Share your spreadsheet
-      to jnuesca@berkeley.edu and ligon@berkeley.edu.
+      with =jnuesca@berkeley.edu= and =ligon@berkeley.edu=.
 
    2. Write a docstring for =twentyfirst_cent_pop=. Follow the
       template from function =f= in Section 2.
@@ -901,6 +892,7 @@ plt.title('Population Growth Rate of China from 1960-present');
 # Fix the TypeError such that this line works
 chn.loc[2018:2009,]
 #+end_src
+
 
 * [EEP153] Week 3
   Some programming learning goals for week 3:
