@@ -622,10 +622,10 @@ myCat = { "Name":"Beatrice", "Age":7,"Nickname":"Queen B"}
 # Exercise: Print out the string "My cat's name is Beatrice, but we usually call her Queen B."
 #+END_SRC
 
-*** 2. Errors 
-    :PROPERTIES:
-    :CUSTOM_ID: errors
-    :END:
+** 2. Errors 
+   :PROPERTIES:
+   :CUSTOM_ID: errors
+   :END:
 
 There are two types of errors: syntax errors, and exceptions.
 
@@ -634,10 +634,10 @@ Exception errors occur when whenever syntactically correct Python code
 results in an error. Python comes with various built-in exceptions as
 well as the possibility to create self-defined exceptions.
 
-**** Raising an exception
-     :PROPERTIES:
-     :CUSTOM_ID: raising-an-exception
-     :END:
+*** Raising an exception
+    :PROPERTIES:
+    :CUSTOM_ID: raising-an-exception
+    :END:
 
 We can use raise to throw an exception if a condition occurs. For
 example: run the code below, then un-comment the second line of code and
@@ -649,10 +649,10 @@ x = '50'
 print(x)
 #+END_SRC
 
-**** Try, Except, Finally
-     :PROPERTIES:
-     :CUSTOM_ID: try-except-finally
-     :END:
+*** Try, Except, Finally
+    :PROPERTIES:
+    :CUSTOM_ID: try-except-finally
+    :END:
 
 A try block lets you test a block of code for errors, an except block
 lets you handle the error, and a finally block lets you execute code,
@@ -677,10 +677,10 @@ finally:
     print('y = ' + y)
 #+END_SRC
 
-*** 3. More useful pandas practice
-    :PROPERTIES:
-    :CUSTOM_ID: more-useful-pandas-practice
-    :END:
+** 3. More useful pandas practice
+   :PROPERTIES:
+   :CUSTOM_ID: more-useful-pandas-practice
+   :END:
 
 #+BEGIN_SRC ipython
 import pandas as pd
@@ -709,10 +709,10 @@ df.columns
 df.describe()
 #+END_SRC
 
-**** Quick manipulations
-     :PROPERTIES:
-     :CUSTOM_ID: quick-manipulations
-     :END:
+*** Quick manipulations
+    :PROPERTIES:
+    :CUSTOM_ID: quick-manipulations
+    :END:
 
 #+BEGIN_SRC ipython
 #to transpose your data:
@@ -722,10 +722,10 @@ df.T
 df.sort_values(by='Ageyears')
 #+END_SRC
 
-**** Selecting data
-     :PROPERTIES:
-     :CUSTOM_ID: selecting-data
-     :END:
+*** Selecting data
+    :PROPERTIES:
+    :CUSTOM_ID: selecting-data
+    :END:
 
 #+BEGIN_SRC ipython
 #selecting a single column (these methods get the same result)
