@@ -406,7 +406,7 @@ import gspread_pandas as gsp
 # Piazza. Replace FILENAME with the filename (without the extension)
 # of the encrypted credential file.
 
-!gpg -d --batch --passphrase "PASSPHRASE" ./EEP153_Materials/Project1/FILENAME.json.gpg > ./EEP153_Exercises/Project1/FILENAME.json
+!gpg -d --batch --passphrase "PASSPHRASE" ../EEP153_Materials/Project1/FILENAME.json.gpg > ./FILENAME.json
 #+end_src
 
    Now, we have the credentials that will allow you to access your
