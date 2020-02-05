@@ -403,7 +403,7 @@ import gspread_pandas as gsp
 # Piazza. Replace FILENAME with the filename (without the extension)
 # of the encrypted credential file.
 
-!gpg -d --batch --passphrase "PASSPHRASE" FILENAME.json.gpg > FILENAME.json
+!gpg -d --batch --passphrase "PASSPHRASE" ./EEP153_Materials/Project1/FILENAME.json.gpg > ./EEP153_Exercises/FILENAME.json
 #+end_src
 
    Now, we have the credentials that will allow you to access your
@@ -881,7 +881,7 @@ wb.search_countries("",display=True)
    the user who may not know how to debug the function themselves. Our
    error message directs users to input a value, and hopefully then,
    they can get on their way.
-
+   
 ** Test Your Understanding
    1. Using =Pandas= and =gspread-dataframe=, each team should submit
       their attendance by sharing a spreadsheet with the following
@@ -895,8 +895,8 @@ wb.search_countries("",display=True)
 
 #+begin_src ipython
 # Fix the NameError
-pd.DataFrame(data={'Growth Rate':np.diff(chn['Total Population'][::-1])}).plot.line();
-plt.title('Population Growth Rate of China from 1960-present');pd.DataFrame(data=np.diff(chn['Total Population'][::-1])).plot.line()
+pd.DataFrame(data={'Growth Rate':np.diff(np.log(chn['Total Population'][::-1]))}).plot.line();
+plt.title('Population Growth Rate of China from 1960-present');
 
 # Fix the TypeError such that this line works
 chn.loc[2018:2009,]
