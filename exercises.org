@@ -589,7 +589,7 @@ world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
 #world.head()
 #+end_src
 
-   We see in the next line =world[world.name ==== b]= which is a way of
+   We see in the next line ~world[world.name==b]~ which is a way of
    filtering the =world= dataframe for rows in which the value in
    column =name= is equal to some parameter =b=. Looking at
    =world.head()=, we can see that the =name= column is filled with what
