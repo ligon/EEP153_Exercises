@@ -179,6 +179,7 @@ for any questions you might have - there's a good chance a peer may have a simil
 As the semester goes on, course staff will update the "Useful Links/Resources" post with any outside Python resources 
 that may be helpful for the whole class.
 
+
 * [EEP153] Week 1
   :PROPERTIES:
   :EXPORT_FILE_NAME: week1.ipynb
@@ -357,6 +358,549 @@ wks.update_acell('CELL', 'YOUR NAME')
    larger datasets, its recommended to use the =gspread-dataframe=
    module instead of looping through and updating cells
    one-by-one. Check out this module here: https://pythonhosted.org/gspread-dataframe/.
+
+
+* [EEP153] Week 2
+  Some programming learning goals for week 2:
+   1. Writing =pandas= dataframes to a Google Spreadsheet using
+      =gpsread-dataframe=
+   2. Docstrings, documentation, comments
+   2. Inspecting objects
+   3. Interpreting exceptions
+   4. Reading tracebacks
+
+** Writing a Pandas dataframe to Google Spreadsheet
+   In last week's exercise, we explored the basic functionality of
+   =gspread= to read and write spreadsheet data using Python. Writing
+   cell data one by one, however, is not the most efficient way to
+   write data especially if you have a dataframe with thousands of
+   observations. Here, we'll extend our knowledge from last week to
+   write data directly from a dataframe into a spreadsheet.
+
+
+   In this cell, we setup our notebook to use the packages we'll need
+   for the demo. You may need to uncomment the first two lines
+   depending on if you encounter a =ModuleNotFoundError= or
+   =NameError=.
+
+#+begin_src ipython
+#!pip install wbdata
+#!pip install gspread-pandas
+import wbdata as wb
+import pandas as pd
+import gspread_pandas as gsp 
+#+end_src
+
+   Remember how we decrypted credential keys last week? We're going to
+   do the same thing here using the team-specific keys shared with
+   your group on Piazza last week. Look in the
+   =EEP153_Materials/Project 1= respository on =Datahub= to get the
+   file name of the =.json.gpg= credentials file that corresponds to
+   your team. Then look at Piazza for your team-specific passphrase.
+
+#+begin_src ipython
+# Replace PASSPHRASE with the secret phrase we shared with your team on
+# Piazza. Replace FILENAME with the filename (without the extension)
+# of the encrypted credential file.
+
+!gpg -d --batch --passphrase "PASSPHRASE" ./EEP153_Materials/Project1/FILENAME.json.gpg > ./EEP153_Exercises/FILENAME.json
+#+end_src
+
+   Now, we have the credentials that will allow you to access your
+   team-specific Google Drive. It is with these credential that you
+   will create and share spreadsheet data with your team. In this next
+   cell, we set up our =gspread_pandas= client with our credentials.
+
+#+begin_src ipython
+# Replace FILENAME with the filename of your decrypted .json file.
+
+user_config = gsp.conf.get_config(conf_dir='./',file_name='FILENAME')
+user_creds = gsp.conf.get_creds(config=user_config)
+client = gsp.Client(creds=user_creds)
+#+end_src
+
+   Now we're in your team drive, except you can't really see
+   it. We can explore what we're working with without your
+   browser. =gspread-pandas= provides a series of functions that will
+   allow us to do exactly this. 
+
+#+begin_src ipython
+# Returns all spreadsheet files you have access to.
+client.list_spreadsheet_files()
+
+# Returns all available folders or directories you can access.
+#client.directories
+
+# Returns information for the root directory.
+#client.root
+
+# Returns the email you can share spreadsheets to.
+#client.email
+#+end_src
+
+   Presumably, your Drive is empty at the moment. Before we start
+   creating sheets into the main directory, let's create a folder to
+   provide some structure.
+
+#+begin_src ipython
+# You can replace "W2 Example" with whatever file name you like.
+client.create_folder('W2 Example')
+#+end_src
+
+   You'll notice that a dictionary was returned. It confirms the
+   pathway of the folder and a unique ID you can refer to at any
+   time. If you were to try copy and pasting this ID and access this
+   folder on your browser, you'll find that you won't have access!
+   We'll cover permissions later.
+
+   Now, we'll create a spreadsheet and move it to the new
+   folder. This spreadsheet will serve as our container for our
+   dataframe we'll create.
+
+#+begin_src ipython
+# If you changed your folder path or name in the previous cell, make sure to 
+# change it here too.
+spread = gsp.Spread('My wbdata', create_spread=True,creds=user_creds)
+spread.move('W2 Example')
+
+# To confirm we've successfully moved it over, this next line should show you
+# that 'My wbdata' is in the 'W2 Example' folder.
+client.find_spreadsheet_files_in_folders('W2 Example')
+#+end_src
+
+   Let's create a =Pandas= dataframe to populate =My
+   wbdata=. Hopefully this next cell looks a little familiar.
+
+#+begin_src ipython
+variable_labels = {"SP.POP.TOTL":"Total Population",
+                  "SP.POP.TOTL.FE.IN":"Total Female Population",
+                  "SP.POP.TOTL.MA.IN":"Total Male Population"}
+chn = wb.get_dataframe(variable_labels, country="CHN")
+chn = chn.iloc[1:,]
+chn.head()
+#+end_src
+
+   Moving it to our spreadsheet is a one-liner. Run the next line and
+   you're done!
+
+#+begin_src ipython
+spread.df_to_sheet(chn)
+#+end_src
+
+   If you don't believe it, run the next line to give yourself access
+   to see it in your browser. Then, check your email.
+
+#+begin_src ipython
+spread.add_permission('YOUREMAIL|reader')
+#+end_src
+
+   You can now easily take this Google Spreadsheet data and put it
+   into a =Pandas= dataframe for manipulation in python in a similar
+   fashion.
+
+#+begin_src ipython
+chn2 = spread.sheet_to_df()
+chn2.head()
+#+end_src
+
+   This was a high-level introduction to =gspread-pandas=. For more
+   information and functions that is provided in this package, check
+   out the documentation here:
+   https://gspread-pandas.readthedocs.io/en/latest/getting_started.html.
+
+** Docstrings, documentation, and comments
+   Often times, you will encounter code blocks that leverage packages
+   and functions you have never seen before. In your attempt to
+   understand what the code is doing, you might find yourself going back
+   and forth between documentation pages and your Jupyter notebook.
+
+   This section aims to share best practices when working through
+   novel code blocks. You will be able to use and create docstrings,
+   breakdown documentation, and strategically leave comments to make
+   your code more readable.
+
+#+begin_src ipython
+# Uncomment the next two lines if you encounter an error. We will talk about
+# this later in the exercise. 
+
+#!pip install geopandas
+#!pip install descartes
+import geopandas
+import matplotlib.pyplot as plt
+
+def f(a, b, c):
+    gdf = geopandas.GeoDataFrame(a, geometry=geopandas.points_from_xy(a['u'], a['v']))
+    world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
+    ax = world[world.name == b].plot(color='white', edgecolor='gray')
+    gdf.plot(ax=ax, color='red',marker='o')
+
+    for i, j, k in zip(df['u'], df['v'], df['t']):
+        ax.annotate(k, xy=(i,j),xytext=(-16,8), textcoords="offset pixels")
+
+    plt.title(c)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
+#+end_src
+
+   In the cell above, we are introduced to a new function that calls a
+   series of functions from =geopandas=. The author didn't do a great
+   job at picking descriptive labels for the parameters used in this
+   function. Normally, we could decipher enough to experiment with the
+   function, but here we don't have much to go off of. Let's pick
+   apart the function line by line to figure out what exactly is going on.
+
+#+begin_src ipython
+# Cick anywhere within the string "GeoDataFrame" and press SHIFT + TAB
+# Press the + in the upper right corner to expand the docstring
+
+gdf = geopandas.GeoDataFrame(a, geometry=geopandas.points_from_xy(a['u'], a['v']))
+
+# There's a nested function in this line too, so let's take a look.
+# Another way of looking at the docstring is illustrated in the commented line below
+
+geopandas.points_from_xy(a['u'], a['v'])
+#geopandas.points_from_xy?
+#+end_src
+
+   We can infer that =a= is probably some form of Pandas dataframe. We
+   know this because =GeoDataFrame='s docstring tells us that the
+   object is a =pandas.DataFrame= that has a column with
+   geometry. This is a constructor and uses a =pandas.DataFrame= to
+   build this =GeoDataFrame= object. If you didn't catch that, we are
+   also given a hint in the =.points_from_xy= function and its
+   docstring which gives an example that looks suspiciously similar to
+   this implementation. 
+
+   =u= looks to be x-coordinates and =v= looks like it could be
+   y-coordinates. We might reasonably guess that these may be
+   coordinates for a map (perhaps longitude and latitude), given that
+   geopandas is a mapping tool.
+
+#+begin_src ipython
+# Explore the docstring for .read_file and .get_path
+world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
+
+#geopandas.datasets.available
+#type(world)
+#world.head()
+#+end_src
+
+   We see in the next line =world[world.name == b]= which is a way of
+   filtering the =world= dataframe for rows in which the value in
+   column =name= is equal to some parameter =b=. Looking at
+   =world.head=, we can see that the =name= column is filled with what
+   looks like countries. It might be reasonable to infer that in the
+   next line (referenced in the code block below), the function is
+   looking to plot one particular country.
+
+#+begin_src ipython
+# Try changing 'b' to 'United Kingdom'
+ax = world[world.name == b].plot(color='white', edgecolor='gray')
+#+end_src
+
+   The last line we'll run through in depthly is the next one. Similar
+   to before, read the docstring and guess what will happen. We can't
+   run this cell because we haven't defined gdf properly.
+
+#+begin_src ipython
+gdf.plot(ax=ax, color='red',marker='o')
+#+end_src
+
+   Here's the rest of the function for your reference. The remainder
+   of the lines don't rely on =geopandas=. Rather, they are native to
+   =Python= and =matplotlib=. Check out the docstrings using SHIFT +
+   TAB or ?.
+
+#+begin_src ipython
+for i, j, k in zip(df['u'], df['v'], df['t']):
+    ax.annotate(k, xy=(i,j),xytext=(-16,8), textcoords="offset pixels")
+
+plt.title(c)
+plt.xlabel('x')
+plt.ylabel('y')
+plt.show()
+#+end_src
+
+   Our final observations: =c= is a string that is modifying =plt= through
+   =.title=. We can assume then that =c= is a title of a plot that
+   will inevitably be returned as shown by the last line
+   =plt.show()=. We also see =df= has a column =t= that
+   corresponds to some =k=. Upon closer inspection of =.annotate=,
+   this is a function that takes strings and plots it on specific
+   points on a map. We can guess that =t= is filled with text labels
+   of some sort.
+
+   Let's recap what we think is going on here. This is a function that
+   takes three arguments: dataframe =(a)=, country =(b)=, title
+   =(c)=. This dataframe =a= should have the following columns: =t=
+   (labels), =u= (longitudes or x-coordinates), =v= (latitudes or
+   y-coordinates). We also know that =b= is a country and =c= is the
+   plot title. 
+
+#+begin_src ipython
+df = pd.DataFrame(
+    {'t': ['London','Edinburgh','Cardiff','Belfast'],
+     'u': [-0.1278,-3.1883,-3.1791,-5.9301],
+     'v': [51.5074,55.9533,51.4816,54.5973]})
+
+f(df,'United Kingdom','Capitals of the countries within the United
+Kingdom')
+#+end_src
+
+   Now that we've successfully deciphered this function. Let's do
+   everyone that comes after you a big favor and update the
+   docstring. Run the next cell to redefine the function with the new
+   docstring.
+   
+#+begin_src ipython
+def f(a, b, c):
+    """
+    This function takes three arguments: dataframe, country, title and returns a plot.
+    
+    Parameters
+    ----------
+    a : pandas df
+        Only three columns labeled 't', 'u', 'v'
+        t = labels (str), u = longitudes (float), v = latitudes (float)
+    
+    b : str
+        Must be an exact match. e.g. United States of America vs. USA.
+    
+    c : str
+        Title of the plot.
+        
+    """
+    
+    gdf = geopandas.GeoDataFrame(a, geometry=geopandas.points_from_xy(a['u'], a['v']))
+    world = geopandas.read_file(geopandas.datasets.get_path('naturalearth_lowres'))
+    ax = world[world.name == b].plot(color='white', edgecolor='gray')
+    gdf.plot(ax=ax, color='red',marker='o')
+
+    for i, j, k in zip(df['u'], df['v'], df['t']):
+        ax.annotate(k, xy=(i,j),xytext=(-16,8), textcoords="offset pixels")
+
+    plt.title(c)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.show()
+#+end_src
+
+   The next cell gives you a new map, this time of Canada's provincial
+   capitals. Try checking out the docstring this time with SHIFT + TAB
+   or ?. 
+
+#+begin_src ipython
+df = pd.DataFrame(
+    {'t': ['Victoria','Whitehorse','Edmonton','Yellowknife','Regina','Winnipeg','Iqaluit','Toronto','Quebec','Fredericton','Halifax','Charlottetown','St. Johns','Ottawa'],
+     'u': [-123,-135,-113,-114,-105,-97,-69,-79,-71,-67,-64,-56,-53,-76],
+     'v': [48,61,54,62,50,50,64,44,47,46,45,53,48,45]})
+
+f(df, 'Canada', 'Canada\'s provincial capitals')
+#f?
+#+end_src
+
+   In this section, we learned how to leverage docstrings to our
+   advantage when deciphering code and we now know how to make our own
+   docstrings to help people in the future decipher code we create. 
+
+   Docstrings often align heavily with documentation you can find
+   online. However, navigating the official package documentation may
+   provide you with more code examples or even shed some light on
+   functionalities you may not be aware of. Check out the links below
+   and see what you can find!
+      - http://geopandas.org/index.html
+      - https://matplotlib.org/api/index.html
+
+   Periodically in the code blocks above, we used =#= to denote
+   comments in our code. You can also use these in lieu of docstrings
+   to provide explanation or directions to people who are viewing your
+   code in the future. In the exercises below, we'll ask you to add
+   comments to the function we defined previously.
+
+** Debugging
+*** Inspecting objects
+    A common issue we run into is making false assumptions about an
+    object and writing code based off this notion of what we believe
+    the object to be. A simple example is item type (str, float, int,
+    etc.)
+
+#+begin_src ipython
+# Let's go back to the dataframe we created in the first section.
+chn.head()
+#+end_src
+
+#+begin_src ipython
+# Now try to pull the row from 2018, and we'll encounter a TypeError.
+chn.loc[2018]
+#+end_src
+
+#+begin_src ipython
+# Sure enough, upon inspection, we discover it's an index of strings.
+type(chn.index.values[0])
+#+end_src
+
+#+begin_src ipython
+# Let's use a roundabout method to get a new array of dates in integers.
+new_index = wb.get_dataframe({"SP.POP.TOTL":"Total Population"},country="CHN").index.astype(int).values
+new_index
+#+end_src
+
+#+begin_src ipython
+# However, when we set the new index, we get a ValueError.
+chn.index = new_index
+
+# Upon inspection, we confirm the different lengths and we can make a quick fix.
+#len(chn.index), len(new_index)
+#+end_src
+
+   These are simple cases that underscore the importance of
+   understanding what your objects consist of and what they look like
+   before you manipulate them. You can save yourself precious
+   debugging time through a brief inspection of your objects.
+   
+   Helpful inspection functions:
+      - =type()=
+      - =df.columns=
+      - =df.shape=
+
+*** Interpreting exceptions
+    Though we've seen  =ValueError= and =TypeError=, there are
+    numerous other errors and exceptions that you may come across over
+    the course of this class and beyond. These error messages may
+    provide valuable information to help guide your troubleshooting.
+
+#+begin_src ipython
+# Key Error
+chn.loc[2019]
+#chn['total population']
+#+end_src
+
+#+begin_src ipython
+# Index Error
+chn.iloc[:,3]
+#wb.get_dataframe({"SP.POP.80UP":"80+ Population"},country="CHN")
+#+end_src
+
+#+begin_src ipython
+# Name Error
+np.sum(chn['Total Population'])
+#wbdata.get_dataframe({"SP.POP.80UP":"80+ Population"},country="CHN")
+#+end_src
+
+#+begin_src ipython
+# Attribute Error
+chn.name
+#chn['Total Population'].columns
+#+end_src
+
+#+begin_src ipython
+# Syntax Error disguised as something else
+print("The total population of China in", chn.index.values[0], "is", int(chn.loc[chn.index.values[0], "Total Population"], "."))
+#+end_src
+
+*** Reading tracebacks
+    The last valuable skill to come out of this exercise is the
+    ability to read tracebacks. When you encounter an error, Python
+    will return a log of code that Python attempted to run, often
+    tracing back several functions that will allow you to pinpoint
+    exactly what went wrong.
+
+    In this next cell, we introduce a function =twentyfirst_cent_pop=
+    which returns a Pandas dataframe of total population for a
+    particular country and creates a simple line graph if you specify
+    =graph=True=.
+
+#+begin_src ipython
+def twentyfirst_cent_pop(cntry_code, graph=False):
+    variable_labels = {"SP.POP.TOTL":"Total Population"}
+    
+    try:
+        df = wb.get_dataframe(variable_labels, country=cntry_code)
+    except:
+        if wb.search_countries(cntry_code, display=False) == []:
+            print("Hm, couldn't find anything for:", cntry_code)
+            return
+        else:
+            print("Do you mean one of these?")
+            results = wb.search_countries(cntry_code, display=False)
+            for i in results:
+                print(i['id'], "-", i['name'])
+            return
+
+    df.index = df.index.astype(int).values
+    df = df.loc[2018:2000,]
+    
+    if graph==True:
+        lines = df.plot.line()
+        plt.title('Total population of ' + cntry_code + ' over the 21st c.')
+        plt.xlabel('Year')
+        plt.ylabel('Population')
+    return df
+
+#Try looking at Ukraine, Russia, Belarus, Hungary, Italy or Greece
+twentyfirst_cent_pop("JPN",graph=True).head()
+#+end_src
+
+#+begin_src ipython
+# What happens if we purposefully break this function?
+twentyfirst_cent_pop(" ").head()
+#+end_src
+
+   When we pass an empty string or a string full of whitespaces, our
+   function raises a TypeError and mentions something about a
+   MultiIndex. Using the traceback, we see that line 18 is having an
+   issue. We know it successfully gets through the =try= statement, 
+   and we can verify that by adding a print statement.
+
+   Take a look at what =df= is when we pass in an empty string into
+   the function. 
+
+#+begin_src ipython
+# Here we can see what happens when we pass in an empty string. A similar
+# behavior is exhibited when we run our function: a MultiIndex with all 
+# countries and years.
+
+wb.search_countries("",display=True)
+#wb.get_dataframe({"SP.POP.TOTL":"Total Population"}, country=" ")
+#+end_src
+
+   Now that we've visualized the problem (MultiIndex instead of a
+   single-level index), we can develop a fix. We know that we want to
+   detect a blank input before it gets to the first try
+   statement. That way, we can raise a more helpful error message
+   compared to what we saw earlier. Try copy + pasting this into the
+   function cell right before =try=.
+
+#+begin_src ipython
+    if len(cntry_code.strip())==0:
+        raise ValueError('Must input a value!')
+#+end_src
+
+   It will still raise an error, but now there's a helpful message to
+   the user who may not know how to debug the function themselves. Our
+   error message directs users to input a value, and hopefully then,
+   they can get on their way.
+   
+** Test Your Understanding
+   1. Using =Pandas= and =gspread-dataframe=, each team should submit
+      their attendance by sharing a spreadsheet with the following
+      columns: First Name, Last Name, E-mail. Share your spreadsheet
+      to jnuesca@berkeley.edu and ligon@berkeley.edu.
+
+   2. Write a docstring for =twentyfirst_cent_pop=. Follow the
+      template from function =f= in Section 2.
+
+   3. See below for debugging exercises
+
+#+begin_src ipython
+# Fix the NameError
+pd.DataFrame(data={'Growth Rate':np.diff(np.log(chn['Total Population'][::-1]))}).plot.line();
+plt.title('Population Growth Rate of China from 1960-present');
+
+# Fix the TypeError such that this line works
+chn.loc[2018:2009,]
+#+end_src
 
 * [EEP153] Week 3
   Some programming learning goals for week 3:
@@ -596,7 +1140,7 @@ x = newton(f,10,df)
 print(x)
    #+end_src
 
-
+   
 * [EEP153] Week 6
    :PROPERTIES:
    :CUSTOM_ID: eep-153-week-6
