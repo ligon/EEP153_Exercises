@@ -894,7 +894,10 @@ chn.loc[2018:2009,]
 #+end_src
 
 
-* [EEP153] Week 3
+* [EEP153] 
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: week4.ipynb
+  :END:
   Some programming learning goals for week 3:
   1. List comprehensions
   2. Some string operations
