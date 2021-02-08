@@ -180,11 +180,11 @@ As the semester goes on, course staff will update the "Useful Links/Resources" p
 that may be helpful for the whole class.
 
 
-* [EEP153] Week 1
+* Authentication & Working with Google Sheets from Python
   :PROPERTIES:
-  :EXPORT_FILE_NAME: week1.ipynb
+  :EXPORT_FILE_NAME: ../Materials/Tools/gspread_authentication.ipynb
   :END:
-  Some programming learning goals for week 1:
+  Some programming tools you'll learn from this notebook:
    1. Decrypting Google Drive API credentials using =GPG=
    2. Using =gspread= to read Google Spreadsheet data
    3. Using =gspread= to write Google Spreadsheet data
@@ -203,16 +203,17 @@ that may be helpful for the whole class.
    provided to you.
 
 #+begin_src ipython
-# Replace PASSPHRASE in the next comment with the secret we'll share
-# with you in class.
+# Replace PASSPHRASE in the next comment with the secret we've shared with you  
+# via piazza.
 
-!gpg -d --batch --passphrase "PASSPHRASE" students-9093fa174318.json.gpg > students-9093fa174318.json
+!gpg -d --batch --passphrase "PASSPHRASE" ../students-9093fa174318.json.gpg > ../students-9093fa174318.json
 #+end_src
 
-   Take a look in your jupyter server directory and you should see a
-   new file named =students-9093fa174318.json=. Protect this file
-   carefully, as anyone who has this can now access the spreadsheets
-   we'll introduce you to in this course.
+   Take a look in your jupyter server directory (or its parent) and
+   you should see a new file named
+   =students-9093fa174318.json=. Protect this file carefully, as
+   anyone who has this can now access the spreadsheets we'll introduce
+   you to in this course.
 
 ** Reading Google Spreadsheet data
 
@@ -243,7 +244,7 @@ scope = ['https://spreadsheets.google.com/feeds',
 # This should be the default .json file pathway, but feel free to change
 # json_file if your pathway if different.
 
-json_file = 'students-9093fa174318.json'
+json_file = '../students-9093fa174318.json'
 spreadsheet = '1xoAe1BlXb7m3ZSB-Tm5XkkVn0W6xkS3y5zl48TqVSsk'
 credentials = ServiceAccountCredentials.from_json_keyfile_name(json_file, scope)
 gc = gspread.authorize(credentials)
@@ -303,8 +304,8 @@ row_vals[:5], col_vals[:5]
 import pandas as pd
 
 data = wks.get_all_values()
-headers = wks.pop(0)
-data_df = pd.DataFrame(data,columns=headers)
+headers = data[0]
+data_df = pd.DataFrame(data[1:],columns=headers)
 data_df.head() 
 #+end_src
 
@@ -325,9 +326,9 @@ data_df.head()
 
 #+begin_src ipython
 # This cell changes the spreadsheet and opens the first worksheet.
-spreadsheet = '1dhJUonTO5AcKgvLX06hjhyQOA9BtcUmVdKf-0eNIKzw'
+spreadsheet = '1b9sZWRcOR2Bupg_9WLywHPY2ZbPwztrP67XTl24Op5w'
 sh = gc.open_by_key(spreadsheet)
-wks = gc.get_worksheet(0)
+wks = sh.get_worksheet(0)
 #+end_src
 
    Now that we're in the new spreadsheet and selected the first
@@ -335,8 +336,8 @@ wks = gc.get_worksheet(0)
    put your name in. (Example: B3)
 
 #+begin_src ipython
-# Make sure to update 'cell' with the cell you would like to update, and 'your name'
-# with your name!
+# Make sure to update 'cell' with the cell you would like to update (e.g., "H2"),
+# and 'YOUR NAME' with your name!
 wks.update_acell('CELL', 'YOUR NAME')
 
 # Alternatively, you can update the cell using the following syntax:
@@ -352,7 +353,7 @@ wks.update_acell('CELL', 'YOUR NAME')
 # section for guidance on how to do this if you forgot.
 #+end_src
 
-   This concludes Week 1 exercises: reading and writing data to/from
+   This concludes this notebook: reading and writing data to/from
    Google Spreadsheets programmatically using Python. One area not
    covered is writing entire =pandas= Dataframes to a spreadsheet. For
    larger datasets, its recommended to use the =gspread-dataframe=
@@ -379,7 +380,6 @@ wks.update_acell('CELL', 'YOUR NAME')
    write data especially if you have a dataframe with thousands of
    observations. Here, we'll extend our knowledge from last week to
    write data directly from a dataframe into a spreadsheet.
-
 
    In this cell, we setup our notebook to use the packages we'll need
    for the demo. You may need to uncomment the first two lines
@@ -494,7 +494,7 @@ spread.df_to_sheet(chn)
    to see it in your browser. Then, check your email.
 
 #+begin_src ipython
-spread.add_permission('YOUREMAIL|reader')
+spread.add_permission('YOUR_EMAIL|reader')
 #+end_src
 
    You can now easily take this Google Spreadsheet data and put it
@@ -877,7 +877,7 @@ wb.get_dataframe({"SP.POP.TOTL":"Total Population"}, country=" ")
    1. Using =pandas= and =gspread-dataframe=, each team should submit
       their attendance by sharing a spreadsheet with the following
       columns: First Name, Last Name, E-mail. Share your spreadsheet
-      with =jnuesca@berkeley.edu= and =ligon@berkeley.edu=.
+      with =cardinali@berkeley.edu= and =ligon@berkeley.edu=.
 
    2. Write a docstring for =twentyfirst_cent_pop=. Follow the
       template from function =f= in Section 2.
