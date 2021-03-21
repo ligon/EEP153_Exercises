@@ -207,6 +207,7 @@ that may be helpful for the whole class.
 # via piazza.
 
 !gpg -d --batch --passphrase "PASSPHRASE" ../students-9093fa174318.json.gpg > ../students-9093fa174318.json
+!ls -l  ../students-9093fa174318.json
 #+end_src
 
    Take a look in your jupyter server directory (or its parent) and
@@ -226,7 +227,7 @@ that may be helpful for the whole class.
 *** Initial Set-up
    In this first cell, we provide the initial setup that will allow
    you to access this spreadsheet:
-   https://docs.google.com/spreadsheets/d/1xoAe1BlXb7m3ZSB-Tm5XkkVn0W6xkS3y5zl48TqVSsk/edit?usp=sharing. 
+   https://docs.google.com/spreadsheets/d/1xoAe1BlXb7m3ZSB-Tm5XkkVn0W6xkS3y5zl48TqVSsk/.
 
 #+begin_src ipython
 # !pip install gspread
