@@ -174,7 +174,7 @@ Extra things to refresh that may be helpful for Project 1: basic visualizations,
 *** Final words
 Throughout this class, you will be exposed to a variety of Python modules and tools and the data that you work with
 may or may not be cleaned. In any case, learning how to find and use online documentation/resources is a
-valuable skill that will benefit you greatly in this course and beyond. Be sure to utilize our course =piazza=
+valuable skill that will benefit you greatly in this course and beyond. Be sure to utilize our course discussion
 for any questions you might have - there's a good chance a peer may have a similar question or have the answer.
 As the semester goes on, course staff will update the "Useful Links/Resources" post with any outside Python resources 
 that may be helpful for the whole class.
